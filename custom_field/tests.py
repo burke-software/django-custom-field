@@ -1,8 +1,12 @@
+# coding=utf-8
+
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.test import TestCase
-from .models import CustomField, CustomFieldValue
+from .models import (
+    CustomField, CustomFieldValue,convert_string_of_unknown_type_to_unicode
+    )
 from .custom_field import CustomFieldAdmin
 
 
@@ -53,3 +57,30 @@ class CustomFieldTest(TestCase):
         response = self.client.get('/admin/custom_field/customfield/1/') 
         # Make sure we aren't adding it on each get
         self.assertContains(response, '42', count=2)
+
+    def test_crazy_string_that_should_be_unicode_but_isnt(self):
+        chars = "ȧƈƈḗƞŧḗḓ ŧḗẋŧ ƒǿř ŧḗşŧīƞɠ"
+        decoded_chars = convert_string_of_unknown_type_to_unicode(chars)
+        self.assertEqual(type(decoded_chars), unicode)
+
+    def test_crazy_unicode_string(self):
+        chars = "ȧƈƈḗƞŧḗḓ ŧḗẋŧ ƒǿř ŧḗşŧīƞɠ"
+        decoded_chars = convert_string_of_unknown_type_to_unicode(chars)
+        self.assertEqual(type(decoded_chars), unicode)
+
+    def test_normal_string(self):
+        chars = "Hello World"
+        decoded_chars = convert_string_of_unknown_type_to_unicode(chars)
+        self.assertEqual(type(decoded_chars), unicode)
+
+    def test_unicode_string(self):
+        chars = u'\xa0'
+        decoded_chars = convert_string_of_unknown_type_to_unicode(chars)
+        self.assertEqual(type(decoded_chars), unicode)
+
+    def test_unicode_string(self):
+        chars = u'\kjnsdfjkbnsdjknkijbnskbhdf'
+        decoded_chars = convert_string_of_unknown_type_to_unicode(chars)
+        self.assertEqual(type(decoded_chars), unicode)
+
+

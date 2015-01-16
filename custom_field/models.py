@@ -43,7 +43,7 @@ class CustomFieldValue(models.Model):
     content_object = generic.GenericForeignKey('content_type', 'object_id')
 
     def __unicode__(self):
-        return str('{}'.format(self.value))
+        return convert_string_of_unknown_type_to_unicode(self.value)
 
     def save(self, *args, **kwargs):
         super(CustomFieldValue, self).save(*args, **kwargs)
@@ -70,3 +70,12 @@ class CustomFieldValue(models.Model):
 
     class Meta:
         unique_together = ('field', 'object_id')
+
+def convert_string_of_unknown_type_to_unicode(string):
+    try:
+        return string.decode('utf-8')
+    except UnicodeDecodeError:
+        return string.decode("ascii", "ignore")
+    except UnicodeEncodeError:
+        return string.encode("utf-8")
+
