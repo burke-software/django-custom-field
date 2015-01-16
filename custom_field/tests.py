@@ -4,7 +4,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.test import TestCase
-from .models import CustomField, CustomFieldValue
+from .models import (
+    CustomField, CustomFieldValue,convert_string_of_unknown_type_to_unicode
+    )
 from .custom_field import CustomFieldAdmin
 
 
@@ -56,28 +58,29 @@ class CustomFieldTest(TestCase):
         # Make sure we aren't adding it on each get
         self.assertContains(response, '42', count=2)
 
-    def create_and_test_custom_field_unicode_method(self, char_string):
-        custom_field = CustomFieldValue.objects.create(
-            field = self.custom_field,
-            value = char_string,
-            object_id = self.custom_field.id
-        )
-        self.assertEqual(type(custom_field.__unicode__()),str)
-
     def test_crazy_string_that_should_be_unicode_but_isnt(self):
         chars = "ȧƈƈḗƞŧḗḓ ŧḗẋŧ ƒǿř ŧḗşŧīƞɠ"
-        self.create_and_test_custom_field_unicode_method(chars)
+        decoded_chars = convert_string_of_unknown_type_to_unicode(chars)
+        self.assertEqual(type(decoded_chars), unicode)
 
     def test_crazy_unicode_string(self):
         chars = "ȧƈƈḗƞŧḗḓ ŧḗẋŧ ƒǿř ŧḗşŧīƞɠ"
-        self.create_and_test_custom_field_unicode_method(chars)
+        decoded_chars = convert_string_of_unknown_type_to_unicode(chars)
+        self.assertEqual(type(decoded_chars), unicode)
 
     def test_normal_string(self):
         chars = "Hello World"
-        self.create_and_test_custom_field_unicode_method(chars)
+        decoded_chars = convert_string_of_unknown_type_to_unicode(chars)
+        self.assertEqual(type(decoded_chars), unicode)
 
     def test_unicode_string(self):
         chars = u'\xa0'
-        self.create_and_test_custom_field_unicode_method(chars)
+        decoded_chars = convert_string_of_unknown_type_to_unicode(chars)
+        self.assertEqual(type(decoded_chars), unicode)
+
+    def test_unicode_string(self):
+        chars = u'\kjnsdfjkbnsdjknkijbnskbhdf'
+        decoded_chars = convert_string_of_unknown_type_to_unicode(chars)
+        self.assertEqual(type(decoded_chars), unicode)
 
 
