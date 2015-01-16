@@ -43,7 +43,10 @@ class CustomFieldValue(models.Model):
     content_object = generic.GenericForeignKey('content_type', 'object_id')
 
     def __unicode__(self):
-        return str('{}'.format(self.value))
+        if type(self.value) == str:
+            return self.value
+        elif type(self.value) == unicode:
+            return self.value.encode('utf-8')
 
     def save(self, *args, **kwargs):
         super(CustomFieldValue, self).save(*args, **kwargs)
