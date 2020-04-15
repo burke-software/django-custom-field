@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from django.core import urlresolvers
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+from django.urls import reverse
 
 from .models import CustomField, CustomFieldValue
 
@@ -42,9 +42,7 @@ class CustomFieldTest(TestCase):
             pass
 
     def test_admin(self):
-        change_url = urlresolvers.reverse(
-            "admin:custom_field_customfield_change", args=[1]
-        )
+        change_url = reverse("admin:custom_field_customfield_change", args=[1])
         response = self.client.get(change_url)
         self.assertContains(response, "42")
         response = self.client.get(change_url)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
@@ -44,7 +44,12 @@ class Migration(migrations.Migration):
                         blank=True,
                     ),
                 ),
-                ("content_type", models.ForeignKey(to="contenttypes.ContentType")),
+                (
+                    "content_type",
+                    models.ForeignKey(
+                        to="contenttypes.ContentType", on_delete=models.CASCADE
+                    ),
+                ),
             ],
             options={},
             bases=(models.Model,),
@@ -66,13 +71,18 @@ class Migration(migrations.Migration):
                 (
                     "content_type",
                     models.ForeignKey(
-                        blank=True, to="contenttypes.ContentType", null=True
+                        blank=True,
+                        to="contenttypes.ContentType",
+                        null=True,
+                        on_delete=models.CASCADE,
                     ),
                 ),
                 (
                     "field",
                     models.ForeignKey(
-                        related_name="instance", to="custom_field.CustomField"
+                        related_name="instance",
+                        to="custom_field.CustomField",
+                        on_delete=models.CASCADE,
                     ),
                 ),
             ],
